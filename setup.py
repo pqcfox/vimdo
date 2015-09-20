@@ -26,6 +26,7 @@ setup(name='vimdo',
       ],
       keywords='vim todo productivity',
       packages=find_packages(),
+      install_requires=['curses'],
       entry_points={
           'console_scripts': [
               'vimdo=vimdo.vimdo:main'
