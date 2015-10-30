@@ -55,3 +55,17 @@ docs/_build/
 
 # PyBuilder
 target/
+# Byte-compiled / optimized / DLL files
+*.py[cod]
+
+# NeoVim
+.*.swp
+
+# Lisp
+*.fasl
+
+# Emacs
+*~
+
+# spec files
+*.spec
