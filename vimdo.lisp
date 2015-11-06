@@ -1,5 +1,4 @@
 (asdf:load-system :cl-termbox)
-(asdf:load-system :cl-autowrap)
 
 (defun draw-text (x y text &optional (fg 0) (bg 0)) 
   "execute a series of change-cell's in a sequential manner such as to write a line of text"
@@ -17,20 +16,20 @@
        (termbox:clear)
        (dotimes (i (length items))
 	 (if (eq selected i)
-	     (draw-text 1 (1+ i) (nth i items) (termbox:tb-const "TB_WHITE") (termbox:tb-const "TB_BLACK"))
+	     (draw-text 1 (1+ i) (nth i items) termbox:+white+ termbox:+black+)
 	     (draw-text 1 (1+ i) (nth i items))))
        (termbox:present)
-       (autowrap:with-alloc (event '(:struct (termbox:tb-event)))
-	 (termbox:poll-event event)
+       (let ((event (termbox:poll-event)))
 	 ; this is how we get the "ch" field of the "event" variable with type "tb-event"
 	 ; its an int so we need to convert it to a char
-	 (case (code-char (termbox:tb-event.ch event))
+	 (case (code-char (getf (termbox:event-data event) :ch))
 	   (#\j
 	    (setf selected (mod (1+ selected) (length items))))
 	   (#\k
 	    (setf selected (mod (1- selected) (length items))))
 	   (#\q
-	    (setf running nil))))))
+	    (setf running nil)))
+	 (termbox:free-event event))))
   (termbox:shutdown))
 
 (test)
