@@ -5,6 +5,10 @@
   (dotimes (i (length text))
     (termbox:change-cell (+ x i) y (char-code (nth i (coerce text 'list))) fg bg)))
 
+(defparameter *bindings* '(#\j :down
+			   #\k :up
+			   #\q :quit))
+
 (defun test ()
   (termbox:init)
   (let ((items '("first item" "second item" "bored lets go throw knives at something"))
@@ -22,12 +26,12 @@
        (let ((event (termbox:poll-event)))
 	 ; this is how we get the "ch" field of the "event" variable with type "tb-event"
 	 ; its an int so we need to convert it to a char
-	 (case (code-char (getf (termbox:event-data event) :ch))
-	   (#\j
+	 (case (getf *bindings* (code-char (getf (termbox:event-data event) :ch)))
+	   (:down
 	    (setf selected (mod (1+ selected) (length items))))
-	   (#\k
+	   (:up
 	    (setf selected (mod (1- selected) (length items))))
-	   (#\q
+	   (:quit
 	    (setf running nil)))
 	 (termbox:free-event event))))
   (termbox:shutdown))
