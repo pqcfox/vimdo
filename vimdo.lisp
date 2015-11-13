@@ -7,7 +7,8 @@
 
 (defparameter *bindings* `(:ch (#\j :down
 				#\k :up
-				#\q :quit)
+				#\q :quit
+				#\d :delete)
 			   :key (,termbox:+key-esc+ :quit)))
 
 (defun test ()
@@ -20,9 +21,9 @@
 	 (return))
        (termbox:clear)
        (dotimes (i (length items))
-	 (let ((fg (if (eq selected i) termbox:+white+ termbox:+default+))
-	       (bg (if (eq selected i) termbox:+black+ termbox:+default+)))
-	   (draw-text 1 (1+ i) (nth i items) fg bg)))
+	 (apply #'draw-text 1 (1+ i) (nth i items) (if (eq selected i)
+						       (list termbox:+white+ termbox:+black+)
+						       (list termbox:+default+ termbox:+default+))))
        (termbox:present)
        (let* ((event (termbox:poll-event))
 	      (event-data (termbox:event-data event))
@@ -38,7 +39,11 @@
 	     (:up
 	      (setf selected (mod (1- selected) (length items))))
 	     (:quit
-	      (setf running nil)))
+	      (setf running nil))
+	     (:delete
+	       (if (plusp (length items))
+		 (setf selected (max 0 (1- selected))
+		       items (remove (nth selected items) items :test #'string=)))))
 	   (case (getf bindings key)
 	     (:quit
 	      (setf running nil))))
